@@ -16,6 +16,8 @@ router.post('/slack/event', async ctx => {
   }
   const eventBody = ctx.request.body
   const { text, channel, user } = eventBody.event
+  if (channel !== 'GH0TG19L0') return ctx.status = 200
+  if (!text) return ctx.status = 200
 
   const content = `On ${channel}: ${text}`
   const webhookPayload = {
