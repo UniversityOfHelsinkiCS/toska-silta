@@ -9,14 +9,21 @@ const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || ''
 
 app.use(bodyParser())
 
+const hardCodedChannelIds = {
+  'GH0TG19L0': 'acual_random'
+}
+
 const userMap = {}
 
-const getUsernameForSlackUser = async (user) => {
+const getInfoForSlackUser = async (user) => {
   if (userMap[user]) return userMap[user]
   const { data } = await axios.get(`https://slack.com/api/users.info?token=${SLACK_BOT_TOKEN}&user=${user}`)
-  const username = data.user.real_name || data.user.name
-  userMap[user] = username
-  return username
+  const info = {
+    username: data.user.real_name || data.user.name,
+    avatar_url: data.user.profile.image_72,
+  }
+  userMap[user] = info
+  return info
 }
 
 router.post('/slack/event', async ctx => {
@@ -26,14 +33,16 @@ router.post('/slack/event', async ctx => {
   }
   const eventBody = ctx.request.body
   const { text, channel, user } = eventBody.event
-  if (channel !== 'GH0TG19L0') return ctx.status = 200
+  const channelName = hardCodedChannelIds[channel]
+  if (!channelName) return ctx.status = 200
   if (!text) return ctx.status = 200
 
-  const username = await getUsernameForSlackUser(user)
+  const { username, avatar_url } = await getInfoForSlackUser(user)
 
-  const content = `On ${channel}: ${text}`
+  const content = `On ${channelName}: ${text}`
   const webhookPayload = {
     username,
+    avatar_url,
     content,
   }
 
