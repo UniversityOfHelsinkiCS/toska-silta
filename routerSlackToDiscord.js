@@ -47,9 +47,12 @@ const sendMessageToDiscord = async (content, username, avatar_url) => {
 }
 
 const handleMessage = async (ctx, event) => {
-  const { user, text } = event
-  const { username, avatar_url } = await getInfoForSlackUser(user)
+  const { user, text, subtype } = event
+  if (subtype === 'bot_message') return ctx.status = 200
+  if (!user) return ctx.status = 200
   if (!text) return ctx.status = 200
+
+  const { username, avatar_url } = await getInfoForSlackUser(user)
   if (username.includes('toska')) return ctx.status = 200
   const content = `${text}`
   await sendMessageToDiscord(content, username, avatar_url)
@@ -88,7 +91,6 @@ router.post('/slack/event', async ctx => {
   if (type === 'file_created') return handleSlackFile(ctx, eventBody.event)
   if (type !== 'message') return ctx.status = 200
   if (subtype === 'file_share') return handleFileShare(ctx, eventBody.event)
-  if (subtype === 'bot_message') return ctx.status = 200
 
   const channelName = hardCodedChannelIds[channel]
   if (!channelName) return ctx.status = 200
