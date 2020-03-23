@@ -3,6 +3,9 @@ const axios = require('axios')
 const FormData = require('form-data')
 const DISCORD_HOOK = process.env.DISCORD_HOOK || ''
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || ''
+const NodeCache = require('node-cache')
+const sentMessageCache = new NodeCache({ stdTTL: 130 })
+const sentFileCache = new NodeCache({ stdTTL: 130 })
 
 const hardCodedChannelIds = {
   'GH0TG19L0': 'acual_random'
@@ -22,12 +25,35 @@ const getInfoForSlackUser = async (user) => {
 }
 
 const sendFileToDiscord = async (url, userInfo) => {
+  if (sentFileCache.has(url)) return
+  sentFileCache.set(url, true)
   const { data } = await axios.get(url, { responseType: 'stream', headers: { 'Authorization': `Bearer ${SLACK_BOT_TOKEN}` } })
   const form = new FormData()
   form.append('username', userInfo.username)
   form.append('avatar_url', userInfo.avatar_url)
   form.append('file', data)
   form.submit(DISCORD_HOOK)
+}
+
+const sendMessageToDiscord = async (content, username, avatar_url) => {
+  if (sentMessageCache.has(`${content}-${username}`)) return
+  sentMessageCache.set(`${content}-${username}`)
+  const webhookPayload = {
+    username,
+    avatar_url,
+    content,
+  }
+  await axios.post(DISCORD_HOOK, webhookPayload)
+}
+
+const handleMessage = async (ctx, event) => {
+  const { user, text } = event
+  const { username, avatar_url } = await getInfoForSlackUser(user)
+  if (!text) return ctx.status = 200
+  if (username.includes('toska')) return ctx.status = 200
+  const content = `${text}`
+  await sendMessageToDiscord(content, username, avatar_url)
+  ctx.status = 200
 }
 
 const handleSlackFile = async (ctx, event) => {
@@ -58,27 +84,17 @@ router.post('/slack/event', async ctx => {
     return
   }
   const eventBody = ctx.request.body
-  const { text, channel, user, type, subtype } = eventBody.event
+  const { channel, type, subtype } = eventBody.event
   if (type === 'file_created') return handleSlackFile(ctx, eventBody.event)
   if (type !== 'message') return ctx.status = 200
   if (subtype === 'file_share') return handleFileShare(ctx, eventBody.event)
   if (subtype === 'bot_message') return ctx.status = 200
-  if (!text) return ctx.status = 200
 
   const channelName = hardCodedChannelIds[channel]
   if (!channelName) return ctx.status = 200
 
-  const { username, avatar_url } = await getInfoForSlackUser(user)
-  if (username.includes('toska')) return ctx.status = 200
-  const content = `${text}`
-  const webhookPayload = {
-    username,
-    avatar_url,
-    content,
-  }
+  await handleMessage(ctx, eventBody.event)
 
-  await axios.post(DISCORD_HOOK, webhookPayload)
-  ctx.status = 200
 })
 
 module.exports = router
