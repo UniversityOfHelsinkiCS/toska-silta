@@ -8,8 +8,6 @@ const hardCodedChannelIds = {
   'GH0TG19L0': 'acual_random'
 }
 
-const sentStuffSanityCheck = []
-
 const userMap = {}
 
 const getInfoForSlackUser = async (user) => {
@@ -23,22 +21,33 @@ const getInfoForSlackUser = async (user) => {
   return info
 }
 
-const handleSlackFile = async (ctx, event) => {
-  const { user_id, file_id } = event
-  const fileInfoUrl = `https://slack.com/api/files.info?token=${SLACK_BOT_TOKEN}&file=${file_id}`
-  if (sentStuffSanityCheck.includes(fileInfoUrl)) return ctx.status = 200
-
-  const { data: fileData } = await axios.get(fileInfoUrl)
-  const userInfo = await getInfoForSlackUser(user_id)
-  const actualFileUrl = fileData.file.url_private_download
-  const { data } = await axios.get(actualFileUrl, { responseType: 'stream', headers: { 'Authorization': `Bearer ${SLACK_BOT_TOKEN}` }})
+const sendFileToDiscord = async (url, userInfo) => {
+  const { data } = await axios.get(url, { responseType: 'stream', headers: { 'Authorization': `Bearer ${SLACK_BOT_TOKEN}` } })
   const form = new FormData()
   form.append('username', userInfo.username)
   form.append('avatar_url', userInfo.avatar_url)
   form.append('file', data)
   form.submit(DISCORD_HOOK)
+}
 
-  sentStuffSanityCheck.push(fileInfoUrl)
+const handleSlackFile = async (ctx, event) => {
+  const { user_id, file_id } = event
+  const fileInfoUrl = `https://slack.com/api/files.info?token=${SLACK_BOT_TOKEN}&file=${file_id}`
+
+  const { data: fileData } = await axios.get(fileInfoUrl)
+  const userInfo = await getInfoForSlackUser(user_id)
+  const actualFileUrl = fileData.file.url_private_download
+  await sendFileToDiscord(actualFileUrl, userInfo)
+
+  ctx.status = 200
+}
+
+const handleFileShare = async (ctx, event) => {
+  const userInfo = await getInfoForSlackUser(event.user)
+  await Promise.all(event.files.map(file => {
+    const url = file.url_private_download
+    return sendFileToDiscord(url, userInfo)
+  }))
   ctx.status = 200
 }
 
@@ -51,7 +60,8 @@ router.post('/slack/event', async ctx => {
   const eventBody = ctx.request.body
   const { text, channel, user, type, subtype } = eventBody.event
   if (type === 'file_created') return handleSlackFile(ctx, eventBody.event)
-  if (type !== 'message') return ctx.status = 200 
+  if (type !== 'message') return ctx.status = 200
+  if (subtype === 'file_share') return handleFileShare(ctx, eventBody.event)
   if (subtype === 'bot_message') return ctx.status = 200
   if (!text) return ctx.status = 200
 
