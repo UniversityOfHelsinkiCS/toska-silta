@@ -4,12 +4,9 @@ const FormData = require('form-data')
 const DISCORD_HOOK = process.env.DISCORD_HOOK || ''
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || ''
 const NodeCache = require('node-cache')
+const channels = require('./shared')
 const sentMessageCache = new NodeCache({ stdTTL: 130 })
 const sentFileCache = new NodeCache({ stdTTL: 130 })
-
-const hardCodedChannelIds = {
-  'GH0TG19L0': 'acual_random'
-}
 
 const userMap = {}
 
@@ -92,7 +89,7 @@ router.post('/slack/event', async ctx => {
   if (type !== 'message') return ctx.status = 200
   if (subtype === 'file_share') return handleFileShare(ctx, eventBody.event)
 
-  const channelName = hardCodedChannelIds[channel]
+  const channelName = channels.getChannelName(channel)
   if (!channelName) return ctx.status = 200
 
   await handleMessage(ctx, eventBody.event)
