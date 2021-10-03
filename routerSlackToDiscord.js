@@ -6,7 +6,7 @@ const DISCORD_GUILD_ID = process.env.DISCORD_GUILD_ID || ''
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || ''
 const NodeCache = require('node-cache')
 const discordClient = require('./discordClient')
-const { getInfoForSlackUser, removeShitFromSlackMessage } = require('./shared')
+const { getInfoForSlackUser, removeShitFromSlackMessage, getNameForSlackChannel } = require('./shared')
 const sentMessageCache = new NodeCache({ stdTTL: 130 })
 const sentFileCache = new NodeCache({ stdTTL: 130 })
 
