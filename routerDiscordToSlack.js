@@ -1,5 +1,5 @@
 const axios = require('axios')
-const client = require('./discrodClient')
+const client = require('./discordClient')
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || ''
 
 const channelMap = {}
@@ -7,7 +7,7 @@ const channelMap = {}
 const getIdForSlackChannel = async (channelName) => {
   if (channelMap[channelName]) return channelMap[channelName]
   
-  const { data } = await axios.get(`https://slack.com/api/conversations.list?token=${SLACK_BOT_TOKEN}`)
+  const { data } = await axios.get(`https://slack.com/api/conversations.list?token=${SLACK_BOT_TOKEN}&types=public_channel,private_channel`)
   const channel = data.channels.find(c => c.name === channelName)
   if (!channel) return null
 

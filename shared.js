@@ -1,21 +1,44 @@
-const hardCodedChannelIds = [
-  {
-    slack_id: 'GH0TG19L0',
-    name: 'acual_random'
+const removeShitFromSlackMessage = (message) => {
+  const userIdStrings = message.match(/<@[^]*>/)
+    
+  if (userIdStrings === null) return message
+    
+  const userIdStringToUsernameMap = {}
+  await Promise.all(userIdStrings.map(async idString => {
+    const id = idString.slice(2, -1)
+    const user = await getInfoForSlackUser(id)
+    userIdStringToUsernameMap[idString] = user.username
+  }))
+    
+  const parsedMessage = message.replace(/<@[^]*>/, (match) => `@${userIdStringToUsernameMap[match]}`)
+  return parsedMessage
+}
+
+const userMap = {}
+const getInfoForSlackUser = async (user) => {
+  if (userMap[user]) return userMap[user]
+  const { data } = await axios.get(`https://slack.com/api/users.info?token=${SLACK_BOT_TOKEN}&user=${user}`)
+  const info = {
+    username: data.user.profile.display_name || data.user.real_name || data.user.name,
+    avatar_url: data.user.profile.image_72,
   }
-]
-
-const getChannelName = (channelId) => {
-  const channel = hardCodedChannelIds.find(c => c.slack_id === channelId) || {}
-  return channel.name
+  userMap[user] = info
+  return info
 }
 
-const getChannelId = (channelName) => {
-  const channel = hardCodedChannelIds.find(c => c.name === channelName) || {}
-  return channel.slack_id
+const channelMap = {}
+const getNameForSlackChannel = async (channelId) => {
+  if (channelMap[channelId]) return channelMap[channelId]
+  const { data } = await axios.get(`https://slack.com/api/conversations.info?token=${SLACK_BOT_TOKEN}&channel=${channelId}`)
+  console.log(data)
+  const channelName = data.channel.name
+  channelMap[channelId] = channelName
+  return channelName
 }
+
 
 module.exports = {
-  getChannelName,
-  getChannelId
+  removeShitFromSlackMessage,
+  getInfoForSlackUser,
+  getNameForSlackChannel
 }
