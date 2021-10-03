@@ -1,4 +1,4 @@
-const removeShitFromSlackMessage = (message) => {
+const removeShitFromSlackMessage = async (message) => {
   const userIdStrings = message.match(/<@[^]*>/)
     
   if (userIdStrings === null) return message
