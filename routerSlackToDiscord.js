@@ -26,6 +26,7 @@ const getInfoForSlackUser = async (user) => {
 const getNameForSlackChannel = async (channelId) => {
   if (channelMap[channelId]) return channelMap[channelId]
   const { data } = await axios.get(`https://slack.com/api/conversations.info?token=${SLACK_BOT_TOKEN}&channel=${channelId}`)
+  console.log(data)
   const channelName = data.channel.name
   channelMap[channelId] = channelName
   return channelName
