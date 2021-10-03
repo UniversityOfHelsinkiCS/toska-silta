@@ -107,7 +107,7 @@ const getChannelWebhook = async (channelId) => {
   const slackChannelName = await getNameForSlackChannel(channelId)
   console.log('channelName', slackChannelName)
   console.log('disco', discrodClient, discrodClient.guild)
-  const guild = discrodClient.guild.fetch(DISCORD_GUILD_ID)
+  const guild = discrodClient.guilds.fetch(DISCORD_GUILD_ID)
   const discordChannel = guild.channels.cache.find(c => c.name === slackChannelName)
 
   if(!discordChannel) return null
