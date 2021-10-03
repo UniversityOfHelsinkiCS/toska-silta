@@ -67,7 +67,7 @@ const handleMessage = async (ctx, event) => {
 
   const { username, avatar_url } = await getInfoForSlackUser(user)
   if (username.includes('toska')) return ctx.status = 200
-  const content = parseMessage(`${text}`)
+  const content = await parseMessage(`${text}`)
   await sendMessageToDiscord(content, username, avatar_url)
   ctx.status = 200
 }
