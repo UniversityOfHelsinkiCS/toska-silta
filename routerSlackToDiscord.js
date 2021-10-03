@@ -5,7 +5,7 @@ const DISCORD_HOOK = process.env.DISCORD_HOOK || ''
 const DISCORD_GUILD_ID = process.env.DISCORD_GUILD_ID || ''
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || ''
 const NodeCache = require('node-cache')
-const discordClient = require('./discordClient')
+const { client } = require('./discordClient')
 const { getInfoForSlackUser, removeShitFromSlackMessage, getNameForSlackChannel } = require('./shared')
 const sentMessageCache = new NodeCache({ stdTTL: 130 })
 const sentFileCache = new NodeCache({ stdTTL: 130 })
@@ -68,7 +68,7 @@ const handleFileShare = async (ctx, event, webhook) => {
 
 const getChannelWebhook = async (channelId) => {
   const slackChannelName = await getNameForSlackChannel(channelId)
-  const guild = await discordClient.guilds.fetch(DISCORD_GUILD_ID)
+  const guild = await client.guilds.fetch(DISCORD_GUILD_ID)
   const discordChannel = guild.channels.cache.find(c => c.name === slackChannelName)
 
   if(!discordChannel) return null

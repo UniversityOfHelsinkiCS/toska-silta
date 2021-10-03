@@ -13,4 +13,12 @@ const intents = [
 const client = new Client({ intents });
 client.login(DISCORD_BOT_TOKEN)
 
-module.exports = client
+const initializeDiscordBot = async () => {
+  await client.login(token);
+  console.log("Discord bot logged in");
+};
+
+module.exports = {
+    client,
+    initializeDiscordBot
+}
