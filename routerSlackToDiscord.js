@@ -14,7 +14,7 @@ const getInfoForSlackUser = async (user) => {
   if (userMap[user]) return userMap[user]
   const { data } = await axios.get(`https://slack.com/api/users.info?token=${SLACK_BOT_TOKEN}&user=${user}`)
   const info = {
-    username: data.user.real_name || data.user.name,
+    username: data.user.profile.display_name || data.user.real_name || data.user.name,
     avatar_url: data.user.profile.image_72,
   }
   userMap[user] = info
