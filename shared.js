@@ -1,4 +1,5 @@
 const axios = require('axios')
+const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || ''
 
 const removeShitFromSlackMessage = async (message) => {
   const userIdStrings = message.match(/<@[^]*>/)
