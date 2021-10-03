@@ -46,7 +46,7 @@ const sendMessageToDiscord = async (content, username, avatar_url) => {
 const parseMessage = async (message) => {
   const userIdStrings = message.match(/<@[^]*>/)
 
-  if (userIdStrings.length === 0) return message
+  if (userIdStrings === null) return message
 
   const userIdStringToUsernameMap = {}
   await Promise.all(userIdStrings.map(async idString => {
