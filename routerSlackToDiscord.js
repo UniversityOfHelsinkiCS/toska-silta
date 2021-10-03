@@ -43,6 +43,22 @@ const sendMessageToDiscord = async (content, username, avatar_url) => {
   await axios.post(DISCORD_HOOK, webhookPayload)
 }
 
+const parseMessage = async (message) => {
+  const userIdStrings = message.match(/<@[^]*>/)
+
+  if (userIdStrings.length === 0) return message
+
+  const userIdStringToUsernameMap = {}
+  await Promise.all(userIdStrings.map(async idString => {
+    const id = idString.slice(2, -1)
+    const user = await getInfoForSlackUser(id)
+    userIdStringToUsernameMap[idString] = user.username
+  }))
+
+  const parsedMessage = message.replace(/<@[^]*>/, (match) => userIdStringToUsernameMap[match])
+  return parsedMessage
+}
+
 const handleMessage = async (ctx, event) => {
   const { user, text, subtype } = event
   if (subtype === 'bot_message') return ctx.status = 200
@@ -51,7 +67,7 @@ const handleMessage = async (ctx, event) => {
 
   const { username, avatar_url } = await getInfoForSlackUser(user)
   if (username.includes('toska')) return ctx.status = 200
-  const content = `${text}`
+  const content = parseMessage(`${text}`)
   await sendMessageToDiscord(content, username, avatar_url)
   ctx.status = 200
 }
