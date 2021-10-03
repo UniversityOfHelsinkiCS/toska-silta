@@ -46,7 +46,7 @@ const sendMessageToDiscord = async (content, username, avatar_url) => {
 const parseMessage = async (message) => {
   const userIdStrings = message.match(/<@[^]*>/)
 
-  if (userIdStrings.length === 0) return message
+  if (userIdStrings === null) return message
 
   const userIdStringToUsernameMap = {}
   await Promise.all(userIdStrings.map(async idString => {
@@ -55,7 +55,7 @@ const parseMessage = async (message) => {
     userIdStringToUsernameMap[idString] = user.username
   }))
 
-  const parsedMessage = message.replace(/<@[^]*>/, (match) => userIdStringToUsernameMap[match])
+  const parsedMessage = message.replace(/<@[^]*>/, (match) => `@${userIdStringToUsernameMap[match]}`)
   return parsedMessage
 }
 
@@ -67,7 +67,7 @@ const handleMessage = async (ctx, event) => {
 
   const { username, avatar_url } = await getInfoForSlackUser(user)
   if (username.includes('toska')) return ctx.status = 200
-  const content = parseMessage(`${text}`)
+  const content = await parseMessage(`${text}`)
   await sendMessageToDiscord(content, username, avatar_url)
   ctx.status = 200
 }
