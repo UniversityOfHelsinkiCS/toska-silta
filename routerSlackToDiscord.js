@@ -55,7 +55,7 @@ const parseMessage = async (message) => {
     userIdStringToUsernameMap[idString] = user.username
   }))
 
-  const parsedMessage = message.replace(/<@[^]*>/, (match) => userIdStringToUsernameMap[match])
+  const parsedMessage = message.replace(/<@[^]*>/, (match) => `@${userIdStringToUsernameMap[match]}`)
   return parsedMessage
 }
 
