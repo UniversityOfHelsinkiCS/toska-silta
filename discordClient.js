@@ -11,10 +11,9 @@ const intents = [
 ];
 
 const client = new Client({ intents });
-client.login(DISCORD_BOT_TOKEN)
 
 const initializeDiscordBot = async () => {
-  await client.login(token);
+  await client.login(DISCORD_BOT_TOKEN);
   console.log("Discord bot logged in");
 };
 
