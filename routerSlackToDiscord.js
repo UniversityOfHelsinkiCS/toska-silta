@@ -59,6 +59,7 @@ const handleSlackFile = async (ctx, event, webhook) => {
 const handleFileShare = async (ctx, event, webhook) => {
   const userInfo = await getInfoForSlackUser(event.user)
   await Promise.all(event.files.map(file => {
+    console.log('file', file)
     const url = file.url_private_download
     return sendFileToDiscord(url, userInfo, webhook)
   }))
@@ -82,7 +83,6 @@ const getChannelWebhook = async (channelId) => {
 }
 
 router.post('/slack/event', async ctx => {
-  console.log(ctx.request.body)
   if (ctx.request.body.challenge) {
     ctx.body = ctx.request.body.challenge
     return
