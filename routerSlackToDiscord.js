@@ -13,19 +13,12 @@ const sentFileCache = new NodeCache({ stdTTL: 130 })
 const sendFileToDiscord = async (url, userInfo, webhook) => {
   if (sentFileCache.has(url)) return
   sentFileCache.set(url, true)
-  const file = await axios.get(url, { responseType: 'arrayBuffer', headers: { 'Authorization': `Bearer ${SLACK_BOT_TOKEN}` } })
-  console.log(file.data)
-  // const form = new FormData()
-  // form.append('username', userInfo.username)
-  // form.append('avatar_url', userInfo.avatar_url)
-  // form.append('file', data)
-  // form.submit(webhook.url)
-
-  await webhook.send({
-    username: userInfo.username,
-    avatarURL: userInfo.avatar_url,
-    files: [file.data]
-  })
+  const { data } = await axios.get(url, { responseType: 'stream', headers: { 'Authorization': `Bearer ${SLACK_BOT_TOKEN}` } })
+  const form = new FormData()
+  form.append('username', userInfo.username)
+  form.append('avatar_url', userInfo.avatar_url)
+  form.append('file', data)
+  form.submit(webhook.url)
 }
 
 const sendMessageToDiscord = async (content, username, avatarURL, webhook) => {
