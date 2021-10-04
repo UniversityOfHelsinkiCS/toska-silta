@@ -1,6 +1,7 @@
 const axios = require('axios')
 const { client } = require('./discordClient')
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || ''
+const FormData = require('form-data')
 
 const channelMap = {}
 
@@ -41,13 +42,17 @@ client.on('message', async msg => {
 
     attachment = attachments[0] // if more than 1, get a job
     console.log(attachment)
-    const file = axios.get(attachment.url, {
-      responseType: 'arraybuffer'
-    }).then(response => Buffer.from(response.data, 'binary').toString('base64'))
+    const { data } = await axios.get(attachment.url, {
+      responseType: 'stream'
+    })
+    // const file = Buffer.from(response.data, 'binary').toString('base64')
     console.log(file)
+    const form = new FormData()
+    form.append('content', data)
+    form.submit(webhook.url)
     const url = 'https://slack.com/api/files.upload'
-      payload = { ...payload, content: file, title: attachment.filename, initial_comment: attachment.filename }
-      axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/x-www-form-urlencoded' }})
+      payload = { ...payload, data: form, title: attachment.filename, initial_comment: attachment.filename }
+      axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/form-data' }})
 
   }
   else {
