@@ -26,6 +26,8 @@ client.on('message', async msg => {
   if (!channelId) return
 
   const username = msg.member.nickname || msg.author.username
+  console.log('content', msg.content)
+  console.log('cleanContent', msg.cleanContent)
   const payload = {
     username,
     channel: channelId,
