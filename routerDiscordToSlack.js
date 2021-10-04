@@ -27,12 +27,33 @@ client.on('message', async msg => {
 
   const username = msg.member.nickname || msg.author.username
   const contentWithCleanedEmojis = msg.cleanContent.replace(/<a?(:[^:]*:)\d+>/g, '$1')
-  const payload = {
+
+
+  let payload = {
     username,
     channel: channelId,
     "text": contentWithCleanedEmojis,
     icon_url: msg.author.displayAvatarURL({ format: 'png' })
   }
-  const url = 'https://slack.com/api/chat.postMessage'
-  axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}` }})
+
+  const attachments = msg.attachments
+  console.log(attachments)
+  if (attachments && attachments.length > 0) {
+
+    attachment = attachments[0] // if more than 1, get a job
+    console.log(attachment)
+    const file = axios.get(attachment.url, {
+      responseType: 'arraybuffer'
+    }).then(response => Buffer.from(response.data, 'binary').toString('base64'))
+    console.log(file)
+    const url = 'https://slack.com/api/files.upload'
+      payload = { ...payload, content: file, title: attachment.filename, initial_comment: attachment.filename }
+      axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/x-www-form-urlencoded' }})
+
+  }
+  else {
+    const url = 'https://slack.com/api/chat.postMessage'
+    axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}` }})
+
+  }
 });
