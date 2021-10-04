@@ -35,8 +35,7 @@ client.on('message', async msg => {
     "text": contentWithCleanedEmojis,
     icon_url: msg.author.displayAvatarURL({ format: 'png' })
   }
-
-  const attachments = msg.attachments
+  const attachments = [...msg.attachments.values()]
   console.log(attachments)
   if (attachments && attachments.length > 0) {
 
