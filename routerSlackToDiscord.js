@@ -17,7 +17,7 @@ const sendFileToDiscord = async (url, userInfo, webhook) => {
   await webhook.send({
     username: userInfo.username,
     avatarURL: userInfo.avatar_url,
-    files: [url]
+    files: [url.href]
   })
 }
 
