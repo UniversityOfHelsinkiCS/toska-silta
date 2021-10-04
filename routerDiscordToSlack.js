@@ -26,10 +26,11 @@ client.on('message', async msg => {
   if (!channelId) return
 
   const username = msg.member.nickname || msg.author.username
+  const contentWithCleanedEmojis = msg.cleanContent.replace(/<a?(:[^:]*:)\d+>/g, '$1');
   const payload = {
     username,
     channel: channelId,
-    "text": msg.cleanContent,
+    "text": contentWithCleanedEmojis,
     icon_url: msg.author.displayAvatarURL({ format: 'png' })
   }
   const url = 'https://slack.com/api/chat.postMessage'
