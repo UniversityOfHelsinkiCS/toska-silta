@@ -23,7 +23,7 @@ const sendFileToDiscord = async (url, userInfo, webhook) => {
   await webhook.send({
     username: userInfo.username,
     avatarURL: userInfo.avatar_url,
-    files: ["https://i.imgur.com/hYW8liV.jpeg"]
+    files: ["https://files.slack.com/files-pri/T6CQ4CSUD-F02FLDWF212/image_from_ios.jpg"]
   })
 }
 
