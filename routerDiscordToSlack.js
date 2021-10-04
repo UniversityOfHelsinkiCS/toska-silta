@@ -31,7 +31,7 @@ client.on('message', async msg => {
   const payload = {
     username,
     channel: channelId,
-    "text": msg.content,
+    "text": msg.cleanContent,
     icon_url: msg.author.displayAvatarURL({ format: 'png' })
   }
   const url = 'https://slack.com/api/chat.postMessage'
