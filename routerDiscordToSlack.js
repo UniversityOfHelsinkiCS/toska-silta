@@ -47,17 +47,14 @@ client.on('message', async msg => {
       responseType: 'stream'
     })
 
-    
+    const formData = new FormData()
+    formData.append('file', data)
+    formData.append('title', 'Image')
+    formData.append('filename', 'image.png')
+    formData.append('channels', channelId)
+    formData.append('token', `Bearer ${SLACK_BOT_TOKEN}`)
     const url = 'https://slack.com/api/files.upload'
-
-    formData =  {
-      token: `Bearer ${SLACK_BOT_TOKEN}`,
-      title: "Image",
-      filename: "image.png",
-      filetype: "auto",
-      channels: channelId,
-      file: data,
-    },
+  
     console.log(formData)
     axios.post(url,  { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/form-data' },  formData })
   }
