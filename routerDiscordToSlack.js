@@ -56,7 +56,7 @@ client.on('message', async msg => {
     const url = 'https://slack.com/api/files.upload'
   
     console.log(formData)
-    axios.post(url,  { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/form-data' },  formData })
+    axios.post(url,  { headers: formData.getHeaders(),  formData })
   }
   else {
     const url = 'https://slack.com/api/chat.postMessage'
