@@ -47,10 +47,9 @@ client.on('message', async msg => {
       responseType: 'stream'
     })
 
-    const form = new FormData()
-    form.append('content', data)
+    
     const url = 'https://slack.com/api/files.upload'
-    form.submit(url)
+
     formData =  {
       token: `Bearer ${SLACK_BOT_TOKEN}`,
       title: "Image",
