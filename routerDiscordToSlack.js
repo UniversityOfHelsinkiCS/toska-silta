@@ -42,18 +42,25 @@ client.on('message', async msg => {
   if (attachments && attachments.length > 0) {
 
     attachment = attachments[0] // if more than 1, get a job
-    console.log(attachment)
+
     const { data } = await axios.get(attachment.url, {
       responseType: 'stream'
     })
-    console.log(data)
+
     const form = new FormData()
     form.append('content', data)
     const url = 'https://slack.com/api/files.upload'
     form.submit(url)
-
-    payload = { ...payload }
-    axios.post(url, payload,  { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/form-data' },  files: { file: form }})
+    formData =  {
+      token: `Bearer ${SLACK_BOT_TOKEN}`,
+      title: "Image",
+      filename: "image.png",
+      filetype: "auto",
+      channels: channelId,
+      file: data,
+    },
+    console.log(formData)
+    axios.post(url,  { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/form-data' },  formData })
   }
   else {
     const url = 'https://slack.com/api/chat.postMessage'
