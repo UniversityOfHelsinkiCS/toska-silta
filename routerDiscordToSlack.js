@@ -48,7 +48,6 @@ client.on('message', async msg => {
 
     const form = new FormData()
     form.append('content', data)
-    form.submit(webhook.url)
     const url = 'https://slack.com/api/files.upload'
       payload = { ...payload, data: form, title: attachment.filename, initial_comment: attachment.filename }
       axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/form-data' }})
