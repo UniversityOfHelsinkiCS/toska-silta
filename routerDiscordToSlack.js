@@ -45,8 +45,7 @@ client.on('message', async msg => {
     const { data } = await axios.get(attachment.url, {
       responseType: 'stream'
     })
-    // const file = Buffer.from(response.data, 'binary').toString('base64')
-    console.log(file)
+
     const form = new FormData()
     form.append('content', data)
     form.submit(webhook.url)
