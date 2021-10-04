@@ -13,7 +13,7 @@ const sentFileCache = new NodeCache({ stdTTL: 130 })
 const sendFileToDiscord = async (url, userInfo, webhook) => {
   if (sentFileCache.has(url)) return
   sentFileCache.set(url, true)
-  // const { data } = await axios.get(url, { responseType: 'stream', headers: { 'Authorization': `Bearer ${SLACK_BOT_TOKEN}` } })
+  const { file } = await axios.get(url, { responseType: 'arrayBuffer', headers: { 'Authorization': `Bearer ${SLACK_BOT_TOKEN}` } })
   // const form = new FormData()
   // form.append('username', userInfo.username)
   // form.append('avatar_url', userInfo.avatar_url)
@@ -23,7 +23,7 @@ const sendFileToDiscord = async (url, userInfo, webhook) => {
   await webhook.send({
     username: userInfo.username,
     avatarURL: userInfo.avatar_url,
-    files: ["https://files.slack.com/files-pri/T6CQ4CSUD-F02FLDWF212/image_from_ios.jpg"]
+    files: [file]
   })
 }
 
