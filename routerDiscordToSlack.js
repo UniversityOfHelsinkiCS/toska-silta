@@ -49,12 +49,11 @@ client.on('message', async msg => {
     console.log(data)
     const form = new FormData()
     form.append('content', data)
-    
     const url = 'https://slack.com/api/files.upload'
-    form.submit(url, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}` }})
+    form.submit(url)
 
-    //payload = { ...payload, file: form, title: attachment.filename, initial_comment: attachment.filename }
-   // axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/form-data' }})
+    payload = { ...payload, file: form, title: attachment.filename, initial_comment: attachment.filename }
+    axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/form-data' }})
 
   }
   else {
