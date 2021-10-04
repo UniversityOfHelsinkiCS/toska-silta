@@ -36,6 +36,7 @@ client.on('message', async msg => {
     "text": contentWithCleanedEmojis,
     icon_url: msg.author.displayAvatarURL({ format: 'png' })
   }
+
   const attachments = [...msg.attachments.values()]
   console.log(attachments)
   if (attachments && attachments.length > 0) {
@@ -48,9 +49,12 @@ client.on('message', async msg => {
     console.log(data)
     const form = new FormData()
     form.append('content', data)
+    
     const url = 'https://slack.com/api/files.upload'
-      payload = { ...payload, file: form, title: attachment.filename, initial_comment: attachment.filename }
-      axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/form-data' }})
+    form.submit(url, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}` }})
+
+    //payload = { ...payload, file: form, title: attachment.filename, initial_comment: attachment.filename }
+   // axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/form-data' }})
 
   }
   else {
