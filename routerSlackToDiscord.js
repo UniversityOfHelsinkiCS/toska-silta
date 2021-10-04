@@ -21,10 +21,9 @@ const sendFileToDiscord = async (url, userInfo, webhook) => {
   // form.submit(webhook.url)
 
   await webhook.send({
-    content: "test",
     username: userInfo.username,
     avatarURL: userInfo.avatar_url,
-    files: [url]
+    files: ["https://i.imgur.com/hYW8liV.jpeg"]
   })
 }
 
