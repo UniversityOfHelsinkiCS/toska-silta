@@ -45,11 +45,11 @@ client.on('message', async msg => {
     const { data } = await axios.get(attachment.url, {
       responseType: 'stream'
     })
-
+    console.log(data)
     const form = new FormData()
     form.append('content', data)
     const url = 'https://slack.com/api/files.upload'
-      payload = { ...payload, data: form, title: attachment.filename, initial_comment: attachment.filename }
+      payload = { ...payload, file: form, title: attachment.filename, initial_comment: attachment.filename }
       axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}`, 'Content-Type': 'application/form-data' }})
 
   }
