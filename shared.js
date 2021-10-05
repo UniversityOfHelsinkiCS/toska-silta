@@ -1,5 +1,6 @@
 const axios = require('axios')
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || ''
+const MAGIC_FUCK_YOU = /https?:\/\/([a-zA-Z0-9_\-]*\.){1,4}[a-zA-Z0-9_\-\/\-]*\|https?:\/\/([a-zA-Z0-9_\-]*\.){1,4}[a-zA-Z0-9_\-\/\-]*/
 
 const removeShitFromSlackMessage = async (message) => {
   const userIdStrings = message.match(/<@[^]*>/)
@@ -13,7 +14,7 @@ const removeShitFromSlackMessage = async (message) => {
     userIdStringToUsernameMap[idString] = user.username
   }))
     
-  const parsedMessage = message.replace(/<@[^]*>/, (match) => `@${userIdStringToUsernameMap[match]}`)
+  const parsedMessage = message.replace(/<@[^]*>/, (match) => `@${userIdStringToUsernameMap[match]}`).replace(MAGIC_FUCK_YOU, '')
   return parsedMessage
 }
 
