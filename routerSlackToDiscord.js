@@ -24,6 +24,8 @@ const sendFileToDiscord = async (url, userInfo, webhook) => {
 const sendMessageToDiscord = async (content, username, avatarURL, webhook) => {
   if (sentMessageCache.has(`${content}-${username}`)) return
   sentMessageCache.set(`${content}-${username}`)
+  console.log(content)
+  console.log(unescape(content))
   await webhook.send({
     content,
     username,

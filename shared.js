@@ -15,7 +15,7 @@ const removeShitFromSlackMessage = async (message) => {
   }))
     
   const parsedMessage = message.replace(/<@[^]*>/, (match) => `@${userIdStringToUsernameMap[match]}`).replace(MAGIC_FUCK_YOU, '')
-  return unescape(parsedMessage)
+  return parsedMessage
 }
 
 const userMap = {}
