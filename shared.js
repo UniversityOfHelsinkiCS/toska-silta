@@ -5,7 +5,7 @@ const removeShitFromSlackMessage = async (message) => {
   let parsedMessage = message
 
   const username_regex = /<@[^>]+>/g
-  const userIdStrings = parsedMessage.matchAll(username_regex)
+  const userIdStrings = parsedMessage.match(username_regex)
   if (userIdStrings !== null) {
     const userIdStringToUsernameMap = {}
     await Promise.all(userIdStrings.map(async idString => {
