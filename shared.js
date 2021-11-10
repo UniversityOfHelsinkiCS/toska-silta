@@ -3,6 +3,7 @@ const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || ''
 const MAGIC_FUCK_YOU = /https?:\/\/([a-zA-Z0-9_\-]*\.){1,4}[a-zA-Z0-9_\-\/\-]*\|https?:\/\/([a-zA-Z0-9_\-]*\.){1,4}[a-zA-Z0-9_\-\/\-]*/
 
 const removeShitFromSlackMessage = async (message) => {
+  console.log("debug 1", message)
   const userIdStrings = message.match(/<@[^]*>/)
     
   if (userIdStrings === null) return message
@@ -15,6 +16,7 @@ const removeShitFromSlackMessage = async (message) => {
   }))
     
   const parsedMessage = message.replace(/<@[^]*>/, (match) => `@${userIdStringToUsernameMap[match]}`).replace(MAGIC_FUCK_YOU, '')
+  console.log("debug 2", parsedMessage)
   const decodeHtmlCharCodes = str => 
     str.replace(/(&#(\d+);)/g, (match, capture, charCode) => 
       String.fromCharCode(charCode));
