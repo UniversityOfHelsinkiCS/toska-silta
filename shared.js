@@ -1,28 +1,32 @@
 const axios = require('axios')
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || ''
-const MAGIC_FUCK_YOU = /https?:\/\/([a-zA-Z0-9_\-]*\.){1,4}[a-zA-Z0-9_\-\/\-]*\|https?:\/\/([a-zA-Z0-9_\-]*\.){1,4}[a-zA-Z0-9_\-\/\-]*/
 
 const removeShitFromSlackMessage = async (message) => {
-  console.log("debug 1", message)
-  const userIdStrings = message.match(/<@[^]*>/)
-    
-  if (userIdStrings === null) return message
-    
-  const userIdStringToUsernameMap = {}
-  await Promise.all(userIdStrings.map(async idString => {
-    const id = idString.slice(2, -1)
-    const user = await getInfoForSlackUser(id)
-    userIdStringToUsernameMap[idString] = user.username
-  }))
-    
-  const parsedMessage = message.replace(/<@[^]*>/, (match) => `@${userIdStringToUsernameMap[match]}`).replace(MAGIC_FUCK_YOU, '')
-  console.log("debug 2", parsedMessage)
-  const decodeHtmlCharCodes = str => 
-    str.replace(/(&#(\d+);)/g, (match, capture, charCode) => 
-      String.fromCharCode(charCode));
+  let parsedMessage = message
 
-  acualParsedMessage = decodeHtmlCharCodes(parsedMessage)
-  return acualParsedMessage
+  const username_regex = /<@[^>]+>/g
+  const userIdStrings = parsedMessage.matchAll(username_regex)
+  if (userIdStrings !== null) {
+    const userIdStringToUsernameMap = {}
+    await Promise.all(userIdStrings.map(async idString => {
+      if (!(idString in userIdStringToUsernameMap)) {
+        const id = idString.slice(2, -1)
+        const user = await getInfoForSlackUser(id)
+        userIdStringToUsernameMap[idString] = user.username
+      }
+    }))
+    parsedMessage = parsedMessage.replaceAll(username_regex, (match) => `@${userIdStringToUsernameMap[match]}`)
+  }
+
+  const embed_url_regex = /<[^>|]+\.[^>|]+\|([^>]+\.[^>]+)>/g
+  parsedMessage = parsedMessage.replaceAll(embed_url_regex, '$1')
+
+  const decodeHtmlCharCodes = str => 
+    str.replaceAll(/(&#(\d+);)/g, (match, capture, charCode) => 
+      String.fromCharCode(charCode));
+  parsedMessage = decodeHtmlCharCodes(parsedMessage)
+
+  return parsedMessage
 }
 
 const userMap = {}
