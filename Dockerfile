@@ -1,13 +1,13 @@
-FROM node:16-alpine3.14
+FROM registry.access.redhat.com/ubi8/nodejs-16-minimal
 
-WORKDIR /usr/src/app
+ENV TZ="Europe/Helsinki"
 
-COPY --chown=node:node package.json package-lock.json ./
+WORKDIR /opt/app-root/src
+
+COPY package.json package-lock.json ./
 
 RUN npm ci
 
-COPY --chown=node:node . .
-
-USER node
+COPY . .
 
 CMD ["node", "."]
