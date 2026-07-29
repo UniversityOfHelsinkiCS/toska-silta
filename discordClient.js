@@ -1,11 +1,12 @@
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN || ''
-const { Client, Intents } = require('discord.js');
+const { Client, GatewayIntentBits } = require('discord.js');
 
 const intents = [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_WEBHOOKS,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildWebhooks,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.MessageContent,
 ];
 
 const client = new Client({ intents });
