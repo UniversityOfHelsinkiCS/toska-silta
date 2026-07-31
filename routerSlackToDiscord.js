@@ -1,4 +1,5 @@
-const router = require('koa-router')()
+const Router = require('@koa/router')
+const router = new Router()
 const axios = require('axios')
 const FormData = require('form-data')
 const DISCORD_HOOK = process.env.DISCORD_HOOK || ''
