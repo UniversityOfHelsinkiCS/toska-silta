@@ -41,7 +41,7 @@ client.on('messageCreate', async msg => {
   console.log(attachments)
   if (attachments && attachments.length > 0) {
 
-    attachment = attachments[0] // if more than 1, get a job
+    const attachment = attachments[0] // if more than 1, get a job
 
     const { data } = await axios.get(attachment.url, {
       responseType: 'stream'
