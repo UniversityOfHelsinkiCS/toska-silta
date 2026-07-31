@@ -18,7 +18,7 @@
     "@koa/router": "^15.7.0",
     "axios": "^1.18.1",
     "discord.js": "^14.27.0",
-    "dotenv": "^8.2.0",
+    "dotenv": "^17.4.2",
     "form-data": "^4.0.6",
     "koa": "^3.2.1",
     "koa-bodyparser": "^4.4.1",
