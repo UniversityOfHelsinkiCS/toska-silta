@@ -20,7 +20,7 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on('message', async msg => {
+client.on('messageCreate', async msg => {
   if (msg.author.bot) return
 
   const channelId = await getIdForSlackChannel(msg.channel.name)
@@ -34,14 +34,14 @@ client.on('message', async msg => {
     username,
     channel: channelId,
     "text": contentWithCleanedEmojis,
-    icon_url: msg.author.displayAvatarURL({ format: 'png' })
+    icon_url: msg.author.displayAvatarURL({ extension: 'png' })
   }
 
   const attachments = [...msg.attachments.values()]
   console.log(attachments)
   if (attachments && attachments.length > 0) {
 
-    attachment = attachments[0] // if more than 1, get a job
+    const attachment = attachments[0] // if more than 1, get a job
 
     const { data } = await axios.get(attachment.url, {
       responseType: 'stream'
@@ -56,7 +56,7 @@ client.on('message', async msg => {
     const url = 'https://slack.com/api/files.upload'
   
     console.log(formData)
-    axios.post(url,  { headers: formData.getHeaders(),  formData })
+    axios.post(url, formData, { headers: formData.getHeaders() })
   }
   else {
     const url = 'https://slack.com/api/chat.postMessage'
