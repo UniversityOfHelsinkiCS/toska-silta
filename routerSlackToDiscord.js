@@ -1,4 +1,5 @@
-const router = require('koa-router')()
+const Router = require('@koa/router')
+const router = new Router()
 const axios = require('axios')
 const FormData = require('form-data')
 const DISCORD_HOOK = process.env.DISCORD_HOOK || ''
@@ -18,7 +19,7 @@ const sendFileToDiscord = async (url, userInfo, webhook) => {
   form.append('username', userInfo.username)
   form.append('avatar_url', userInfo.avatar_url)
   form.append('file', data)
-  form.submit(webhook.url)
+  axios.post(webhook.url, form, { headers: form.getHeaders() })
 }
 
 const sendMessageToDiscord = async (content, username, avatarURL, webhook) => {
@@ -77,7 +78,7 @@ const getChannelWebhook = async (channelId) => {
   const webhooks = await discordChannel.fetchWebhooks()
 
   const webhook = webhooks.size === 0
-    ? await discordChannel.createWebhook(slackChannelName, { avatar: "https://cdn.discordapp.com/embed/avatars/1.png" }).catch(console.error)
+    ? await discordChannel.createWebhook({ name: slackChannelName, avatar: "https://cdn.discordapp.com/embed/avatars/1.png" }).catch(console.error)
     : webhooks.first()
 
   return webhook
