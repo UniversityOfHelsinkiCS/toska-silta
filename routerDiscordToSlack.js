@@ -20,7 +20,7 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on('message', async msg => {
+client.on('messageCreate', async msg => {
   if (msg.author.bot) return
 
   const channelId = await getIdForSlackChannel(msg.channel.name)
@@ -56,11 +56,11 @@ client.on('message', async msg => {
     const url = 'https://slack.com/api/files.upload'
   
     console.log(formData)
-    axios.post(url,  { headers: formData.getHeaders(),  formData })
+    await axios.post(url,  { headers: formData.getHeaders(),  formData })
   }
   else {
     const url = 'https://slack.com/api/chat.postMessage'
-    axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}` }})
+    await axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}` }})
 
   }
 });
