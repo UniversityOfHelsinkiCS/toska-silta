@@ -38,7 +38,7 @@ client.on('messageCreate', async msg => {
   }
 
   const attachments = [...msg.attachments.values()]
-  console.log(attachments)
+
   if (attachments && attachments.length > 0) {
 
     const attachment = attachments[0] // if more than 1, get a job
@@ -54,13 +54,11 @@ client.on('messageCreate', async msg => {
     formData.append('channels', channelId)
     formData.append('token', `Bearer ${SLACK_BOT_TOKEN}`)
     const url = 'https://slack.com/api/files.upload'
-  
-    console.log(formData)
+
     await axios.post(url, formData, { headers: formData.getHeaders() })
   }
   else {
     const url = 'https://slack.com/api/chat.postMessage'
     await axios.post(url, payload, { headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}` }})
-
   }
 });
